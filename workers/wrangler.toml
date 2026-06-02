@@ -1,0 +1,27 @@
+name = "cuadre-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+JWT_SECRET = "cuadre-dev-secret-change-in-production"
+ENVIRONMENT = "development"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cuadre-db"
+database_id = "placeholder-replace-with-real-id"
+
+[[kv_namespaces]]
+binding = "RATES_CACHE"
+id = "placeholder-replace-with-real-id"
+
+[ai]
+binding = "AI"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "cuadre-storage"
+
+[triggers]
+crons = ["*/15 * * * *"]
