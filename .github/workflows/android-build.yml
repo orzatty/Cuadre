@@ -100,6 +100,26 @@ jobs:
         env:
           NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
 
+      - name: Sign Android APK
+        run: |
+          # 1. Generate a keystore dynamically if not already provided
+          keytool -genkeypair -v -keystore release.keystore -alias cuadre -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=cuadre.app, OU=Cuadre, O=Cuadre, L=Caracas, S=DF, C=VE" -storepass ${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'cuadre123' }} -keypass ${{ secrets.ANDROID_KEY_PASSWORD || 'cuadre123' }}
+
+          # 2. Find apksigner tool dynamically in Android SDK build-tools
+          APKSIGNER=$(find $ANDROID_HOME/build-tools -name apksigner | sort -V | tail -n 1)
+          echo "Found apksigner: $APKSIGNER"
+
+          # 3. Find the compiled unsigned release APK
+          UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk/ -name "*-unsigned.apk" | head -n 1)
+          if [ -z "$UNSIGNED_APK" ]; then
+            UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk/ -name "*.apk" | head -n 1)
+          fi
+          echo "Found unsigned APK: $UNSIGNED_APK"
+
+          # 4. Sign the APK
+          $APKSIGNER sign --ks release.keystore --ks-key-alias cuadre --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'cuadre123' }} --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD || 'cuadre123' }} --out src-tauri/gen/android/app/build/outputs/apk/release/app-release-signed.apk "$UNSIGNED_APK"
+          echo "APK successfully signed!"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
