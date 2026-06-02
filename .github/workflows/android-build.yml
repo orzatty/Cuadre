@@ -92,6 +92,9 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0"
 
+      - name: Initialize Android Project
+        run: cargo tauri android init
+
       - name: Build Android APK
         run: cargo tauri android build --apk
         env:
