@@ -117,7 +117,7 @@ jobs:
           echo "Found unsigned APK: $UNSIGNED_APK"
 
           # 4. Sign the APK
-          $APKSIGNER sign --ks release.keystore --ks-key-alias cuadre --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'cuadre123' }} --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD || 'cuadre123' }} --out src-tauri/gen/android/app/build/outputs/apk/release/app-release-signed.apk "$UNSIGNED_APK"
+          $APKSIGNER sign --ks release.keystore --ks-key-alias cuadre --ks-pass pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'cuadre123' }} --key-pass pass:${{ secrets.ANDROID_KEY_PASSWORD || 'cuadre123' }} --out "$(dirname "$UNSIGNED_APK")/app-release-signed.apk" "$UNSIGNED_APK"
           echo "APK successfully signed!"
 
       - name: Upload APK artifact
